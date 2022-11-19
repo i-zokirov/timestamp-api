@@ -28,38 +28,36 @@ function toTimestamp(strDate) {
 }
 
 app.get("/api/:date", function (req, res) {
-    // const { date: datestring } = req.params;
-
-    // const date = new Date(datestring);
-
-    // if (!moment(datestring).isValid()) {
-    //     res.json({ error: "Invalid Date" });
-    // } else {
-    //     res.json({
-    //         utc: moment(datestring).locale("LLLL"),
-    //         unix: toTimestamp(date),
-    //     });
-    // }
-
     let dateString = req.params.date;
 
     //A 4 digit number is a valid ISO-8601 for the beginning of that year
     //5 digits or more must be a unix time, until we reach a year 10,000 problem
-    if (/\d{5,}/.test(dateString)) {
-        let dateInt = parseInt(dateString);
-        //Date regards numbers as unix timestamps, strings are processed differently
-        res.json({ unix: dateString, utc: new Date(dateInt).toUTCString() });
-    } else {
-        let dateObject = new Date(dateString);
-
-        if (dateObject.toString() === "Invalid Date") {
-            res.json({ error: "Invalid Date" });
-        } else {
+    if (dateString) {
+        if (/\d{5,}/.test(dateString)) {
+            let dateInt = parseInt(dateString);
+            //Date regards numbers as unix timestamps, strings are processed differently
             res.json({
-                unix: dateObject.valueOf(),
-                utc: dateObject.toUTCString(),
+                unix: dateString,
+                utc: new Date(dateInt).toUTCString(),
             });
+        } else {
+            let dateObject = new Date(dateString);
+
+            if (dateObject.toString() === "Invalid Date") {
+                res.json({ error: "Invalid Date" });
+            } else {
+                res.json({
+                    unix: dateObject.valueOf(),
+                    utc: dateObject.toUTCString(),
+                });
+            }
         }
+    } else {
+        const now = new Date();
+        res.json({
+            unix: now.valueOf(),
+            utc: now.toUTCString(),
+        });
     }
 });
 
