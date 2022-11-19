@@ -24,8 +24,7 @@ app.get("/api/hello", function (req, res) {
     res.json({ greeting: "hello API" });
 });
 function toTimestamp(strDate) {
-    var datum = Date.parse(strDate);
-    return datum / 1000;
+    return Date.parse(strDate);
 }
 
 app.get("/api/:date", function (req, res) {
@@ -36,7 +35,10 @@ app.get("/api/:date", function (req, res) {
     if (!moment(datestring).isValid()) {
         res.json({ error: "Invalid Date" });
     } else {
-        res.json({ utc: moment(datestring).utc(), unix: toTimestamp(date) });
+        res.json({
+            utc: moment(datestring).locale("LLLL"),
+            unix: toTimestamp(date),
+        });
     }
 });
 
